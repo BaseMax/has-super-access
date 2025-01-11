@@ -2,8 +2,10 @@ import os
 import sys
 import platform
 import ctypes
+from typing import Dict
 
-def detect_platform():
+
+def detect_platform() -> str:
     """
     Detect the current platform and return it as a string.
 
@@ -21,14 +23,14 @@ def detect_platform():
     return 'Unknown'
 
 
-def has_admin_privileges():
+def has_admin_privileges() -> bool:
     """
     Check if the current user has administrative privileges.
 
     Returns:
         bool: True if the user has elevated privileges, False otherwise.
     """
-    platform_name = detect_platform()
+    platform_name: str = detect_platform()
     try:
         if platform_name == 'Windows':
             return ctypes.windll.shell32.IsUserAnAdmin() != 0
@@ -44,12 +46,12 @@ def has_admin_privileges():
     return False
 
 
-def get_os_info():
+def get_os_info() -> Dict[str, str]:
     """
     Retrieve detailed operating system information.
 
     Returns:
-        dict: A dictionary containing the OS name, version, release, and architecture.
+        Dict[str, str]: A dictionary containing the OS name, version, release, and architecture.
     """
     return {
         "OS Name": platform.system(),
@@ -59,17 +61,17 @@ def get_os_info():
     }
 
 
-def print_system_info():
+def print_system_info() -> None:
     """
     Print detailed operating system information to the console.
     """
-    os_info = get_os_info()
+    os_info: Dict[str, str] = get_os_info()
     print("Operating System Information:")
     for key, value in os_info.items():
         print(f"  {key}: {value}")
 
 
-def main():
+def main() -> None:
     """
     Main function to run the privilege check and print system information.
     """
