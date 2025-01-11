@@ -3,65 +3,41 @@ import sys
 import platform
 import ctypes
 
-def is_windows():
+def detect_platform():
     """
-    Determine if the current operating system is Windows.
+    Detect the current platform and return it as a string.
 
     Returns:
-        bool: True if the operating system is Windows, False otherwise.
+        str: One of 'Windows', 'Linux', 'macOS', 'Unix', or 'Unknown'.
     """
-    return sys.platform.startswith('win')
+    if sys.platform.startswith('win'):
+        return 'Windows'
+    elif sys.platform.startswith('linux'):
+        return 'Linux'
+    elif sys.platform == 'darwin':
+        return 'macOS'
+    elif os.name == 'posix':
+        return 'Unix'
+    return 'Unknown'
 
 
-def is_unix():
-    """
-    Determine if the current operating system is Unix-based (Linux, macOS, etc.).
-
-    Returns:
-        bool: True if the operating system is Unix-based, False otherwise.
-    """
-    return os.name == 'posix'
-
-
-def is_macos():
-    """
-    Determine if the current operating system is macOS.
-
-    Returns:
-        bool: True if the operating system is macOS, False otherwise.
-    """
-    return sys.platform == 'darwin'
-
-
-def is_linux():
-    """
-    Determine if the current operating system is Linux.
-
-    Returns:
-        bool: True if the operating system is Linux, False otherwise.
-    """
-    return sys.platform.startswith('linux')
-
-
-def is_admin():
+def has_admin_privileges():
     """
     Check if the current user has administrative privileges.
-
-    - On Windows, checks for administrative rights.
-    - On Unix-based systems (Linux, macOS, etc.), checks for superuser privileges.
 
     Returns:
         bool: True if the user has elevated privileges, False otherwise.
     """
+    platform_name = detect_platform()
     try:
-        if is_windows():
+        if platform_name == 'Windows':
             return ctypes.windll.shell32.IsUserAnAdmin() != 0
-        elif is_unix():
+        elif platform_name in ['Linux', 'macOS', 'Unix']:
             return os.geteuid() == 0
         else:
-            print("Unsupported platform for privilege check.")
+            print(f"Unsupported platform: {platform_name}")
     except AttributeError:
-        print("Error: Required functions not available on this platform.")
+        print("Error: Required functionality not available on this platform.")
     except Exception as e:
         print(f"Unexpected error during privilege check: {e}")
     
@@ -70,25 +46,40 @@ def is_admin():
 
 def get_os_info():
     """
-    Retrieve basic operating system information.
+    Retrieve detailed operating system information.
 
     Returns:
-        dict: A dictionary containing OS name, version, and architecture.
+        dict: A dictionary containing the OS name, version, release, and architecture.
     """
     return {
         "OS Name": platform.system(),
         "OS Version": platform.version(),
+        "OS Release": platform.release(),
         "Architecture": platform.architecture()[0],
     }
 
 
-if __name__ == "__main__":
+def print_system_info():
+    """
+    Print detailed operating system information to the console.
+    """
     os_info = get_os_info()
     print("Operating System Information:")
     for key, value in os_info.items():
         print(f"  {key}: {value}")
-    
-    if is_admin():
-        print("You have elevated (administrative/superuser) privileges.")
+
+
+def main():
+    """
+    Main function to run the privilege check and print system information.
+    """
+    print_system_info()
+
+    if has_admin_privileges():
+        print("\nYou have elevated (administrative/superuser) privileges.")
     else:
-        print("You do NOT have elevated privileges.")
+        print("\nYou do NOT have elevated privileges.")
+
+
+if __name__ == "__main__":
+    main()
