@@ -80,6 +80,4 @@ Feel free to fork this repository, make changes, and submit pull requests. Contr
 
 MIT License
 
-(c) 2025, MxB
-
 (c) Copyright 2025, Max Base
